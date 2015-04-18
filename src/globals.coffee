@@ -2,6 +2,8 @@
 Engine =
 Game = {}
 
+viewSize = {}
+
 stage =
 container =
 renderer =

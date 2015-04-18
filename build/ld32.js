@@ -1,7 +1,9 @@
 (function() {
-  var Camera, Config, Engine, Game, Light, Lighting, Player, animate, background, beds, container, getByClass, getById, getByTag, lava, player, renderer, stage;
+  var Camera, Config, Engine, Game, Light, Lighting, Player, animate, background, beds, container, getByClass, getById, getByTag, lava, player, renderer, stage, viewSize;
 
   Engine = Game = {};
+
+  viewSize = {};
 
   stage = container = renderer = background = beds = player = lava = null;
 
@@ -194,16 +196,36 @@
       player.speed.y += 1;
     }
     player.s.position.x += player.speed.x;
-    return player.s.position.y += player.speed.y;
+    player.s.position.y += player.speed.y;
+    return Camera.set(window.w / 2 - player.s.position.x, window.h / 2 - player.s.position.y);
   };
 
   Game.start = function() {
+    var floor, zombie;
     stage = new PIXI.Stage(0xffffff);
     renderer = new PIXI.WebGLRenderer(window.w, window.h);
     renderer.view.style.zIndex = 1;
     document.body.appendChild(renderer.view);
     container = new PIXI.DisplayObjectContainer();
     stage.addChild(container);
+    floor = new PIXI.TilingSprite(PIXI.Texture.fromImage('http://i.imgur.com/RgDhleZ.png'));
+    floor.width = window.w;
+    floor.height = window.h;
+    floor.position = {
+      x: 0,
+      y: 0
+    };
+    floor.tilePosition = {
+      x: 0,
+      y: 0
+    };
+    container.addChild(floor);
+    zombie = PIXI.Sprite.fromImage('http://i.imgur.com/6HA7HJ6.png');
+    zombie.width = 200;
+    zombie.height = 250;
+    zombie.position.x = window.w / 2 - zombie.width / 2;
+    zombie.position.y = window.h - zombie.height;
+    container.addChild(zombie);
     player = new Player(100, 100);
     return requestAnimFrame(animate);
   };

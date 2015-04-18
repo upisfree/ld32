@@ -13,5 +13,4 @@ Game.tick = ->
   player.s.position.y += player.speed.y
 
   # set camera
-  #Camera.set { x: window.w / 2 - player.s.position.x, y: renderer.offset.y }
-  #Camera.set { x: renderer.offset.x, y: renderer.offset.y }
+  Camera.set window.w / 2 - player.s.position.x, window.h / 2 - player.s.position.y
