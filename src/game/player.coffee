@@ -1,6 +1,6 @@
 class Player
   constructor: (x, y) ->
-    @s = PIXI.Sprite.fromImage 'http://i.imgur.com/S1gYEDP.png'
+    @s = PIXI.Sprite.fromImage 'http://i.imgur.com/S1gYEDP.png' # dK05LVU
     @s.width = 100
     @s.height = 100
     @s.anchor.x = 0.5
@@ -22,28 +22,19 @@ class Player
     @s.position.x = x
     @s.position.y = y
   enableControlling: (p) ->
-    window.onkeydown = (e) ->
+    window.onmousemove = (e) ->
+      Mouse.x = e.x
+      Mouse.y = e.y
+
+    window.onkeydown = (e2) ->
       distance = 2.5
       limit = 10
 
-      switch e.keyCode
+      v = vectorFromAngle p.s.rotation
+      m = 10
+
+      switch e2.keyCode
         when 87, 38 # up
-          if Math.rToD(p.s.rotation) isnt 0
-            p.s.rotation = Math.dToR 0
-          else
-            p.speed.y -= distance if p.speed.y > -limit
-        when 68, 39 # right
-          if Math.rToD(p.s.rotation) isnt 90
-            p.s.rotation = Math.dToR 90
-          else
-            p.speed.x += distance if p.speed.x < limit
+          p.move v.x * m, v.y * m
         when 83, 40 # down
-          if Math.rToD(p.s.rotation) isnt 180
-            p.s.rotation = Math.dToR 180
-          else
-            p.speed.y += distance if p.speed.y < limit
-        when 65, 37 # left
-          if Math.rToD(p.s.rotation) isnt 270
-            p.s.rotation = Math.dToR 270
-          else
-            p.speed.x -= distance if p.speed.x > -limit
+          p.move -v.x * m, -v.y * m

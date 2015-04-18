@@ -6,3 +6,7 @@ Math.rToD = (r) ->
 
 Math.dToR = (d) ->
   return d * (Math.PI / 180)
+
+vectorFromAngle = (a) ->
+  a -= Math.PI / 2 # ???
+  return { x: Math.cos(a), y: Math.sin(a) } # with “return” it's more 

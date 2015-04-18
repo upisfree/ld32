@@ -1,7 +1,7 @@
 (function() {
-  var Camera, Config, Engine, Game, Light, Lighting, Player, animate, background, beds, container, getByClass, getById, getByTag, lava, player, renderer, stage, viewSize;
+  var Camera, Config, Engine, Game, Light, Lighting, Mouse, Player, animate, background, beds, container, getByClass, getById, getByTag, lava, player, renderer, stage, vectorFromAngle, viewSize;
 
-  Engine = Game = {};
+  Engine = Game = Mouse = {};
 
   viewSize = {};
 
@@ -19,6 +19,14 @@
 
   Math.dToR = function(d) {
     return d * (Math.PI / 180);
+  };
+
+  vectorFromAngle = function(a) {
+    a -= Math.PI / 2;
+    return {
+      x: Math.cos(a),
+      y: Math.sin(a)
+    };
   };
 
   Array.prototype.min = function() {
@@ -132,50 +140,23 @@
     };
 
     Player.prototype.enableControlling = function(p) {
-      return window.onkeydown = function(e) {
-        var distance, limit;
+      window.onmousemove = function(e) {
+        Mouse.x = e.x;
+        return Mouse.y = e.y;
+      };
+      return window.onkeydown = function(e2) {
+        var distance, limit, m, v;
         distance = 2.5;
         limit = 10;
-        switch (e.keyCode) {
+        v = vectorFromAngle(p.s.rotation);
+        m = 10;
+        switch (e2.keyCode) {
           case 87:
           case 38:
-            if (Math.rToD(p.s.rotation) !== 0) {
-              return p.s.rotation = Math.dToR(0);
-            } else {
-              if (p.speed.y > -limit) {
-                return p.speed.y -= distance;
-              }
-            }
-            break;
-          case 68:
-          case 39:
-            if (Math.rToD(p.s.rotation) !== 90) {
-              return p.s.rotation = Math.dToR(90);
-            } else {
-              if (p.speed.x < limit) {
-                return p.speed.x += distance;
-              }
-            }
-            break;
+            return p.move(v.x * m, v.y * m);
           case 83:
           case 40:
-            if (Math.rToD(p.s.rotation) !== 180) {
-              return p.s.rotation = Math.dToR(180);
-            } else {
-              if (p.speed.y < limit) {
-                return p.speed.y += distance;
-              }
-            }
-            break;
-          case 65:
-          case 37:
-            if (Math.rToD(p.s.rotation) !== 270) {
-              return p.s.rotation = Math.dToR(270);
-            } else {
-              if (p.speed.x > -limit) {
-                return p.speed.x -= distance;
-              }
-            }
+            return p.move(-v.x * m, -v.y * m);
         }
       };
     };
@@ -185,18 +166,7 @@
   })();
 
   Game.tick = function() {
-    if (player.speed.x > 0) {
-      player.speed.x -= 1;
-    } else if (player.speed.x < 0) {
-      player.speed.x += 1;
-    }
-    if (player.speed.y > 0) {
-      player.speed.y -= 1;
-    } else if (player.speed.y < 0) {
-      player.speed.y += 1;
-    }
-    player.s.position.x += player.speed.x;
-    player.s.position.y += player.speed.y;
+    player.s.rotation = Math.atan2(window.h / 2 - Mouse.y, window.w / 2 - Mouse.x) - Math.PI / 2;
     return Camera.set(window.w / 2 - player.s.position.x, window.h / 2 - player.s.position.y);
   };
 

@@ -1,6 +1,7 @@
 # Is this govnokod, uh?
 Engine =
-Game = {}
+Game =
+Mouse = {}
 
 viewSize = {}
 
