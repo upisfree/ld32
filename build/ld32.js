@@ -1,5 +1,5 @@
 (function() {
-  var Camera, Config, Engine, Game, Light, Lighting, Mouse, Player, animate, background, beds, container, getByClass, getById, getByTag, lava, player, renderer, stage, vectorFromAngle, viewSize;
+  var Camera, Config, Engine, Game, Light, Lighting, Mouse, Player, Wall, animate, background, beds, container, getByClass, getById, getByTag, lava, player, renderer, stage, vectorFromAngle, viewSize, walls;
 
   Engine = Game = Mouse = {};
 
@@ -114,6 +114,28 @@
 
   })();
 
+  Wall = (function() {
+    function Wall(x, y, w, h, t) {
+      this.s = new PIXI.TilingSprite(PIXI.Texture.fromImage(t));
+      this.s.width = w;
+      this.s.height = h;
+      this.s.position.x = x;
+      this.s.position.y = y;
+      container.addChild(this.s);
+      walls.push(this);
+      return this;
+    }
+
+    Wall.prototype.isCollide = function(x, y) {
+      return console.log('wow');
+    };
+
+    return Wall;
+
+  })();
+
+  walls = [];
+
   Player = (function() {
     function Player(x, y) {
       this.s = PIXI.Sprite.fromImage('http://i.imgur.com/S1gYEDP.png');
@@ -171,31 +193,14 @@
   };
 
   Game.start = function() {
-    var floor, zombie;
+    var wall;
     stage = new PIXI.Stage(0xffffff);
     renderer = new PIXI.WebGLRenderer(window.w, window.h);
     renderer.view.style.zIndex = 1;
     document.body.appendChild(renderer.view);
     container = new PIXI.DisplayObjectContainer();
     stage.addChild(container);
-    floor = new PIXI.TilingSprite(PIXI.Texture.fromImage('http://i.imgur.com/RgDhleZ.png'));
-    floor.width = window.w;
-    floor.height = window.h;
-    floor.position = {
-      x: 0,
-      y: 0
-    };
-    floor.tilePosition = {
-      x: 0,
-      y: 0
-    };
-    container.addChild(floor);
-    zombie = PIXI.Sprite.fromImage('http://i.imgur.com/6HA7HJ6.png');
-    zombie.width = 200;
-    zombie.height = 250;
-    zombie.position.x = window.w / 2 - zombie.width / 2;
-    zombie.position.y = window.h - zombie.height;
-    container.addChild(zombie);
+    wall = new Wall(500, 500, 200, 600, 'http://i.imgur.com/RgDhleZ.png');
     player = new Player(100, 100);
     return requestAnimFrame(animate);
   };

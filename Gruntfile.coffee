@@ -19,6 +19,7 @@ module.exports = (grunt) ->
             'src/engine/utils.coffee'
             'src/engine/camera.coffee'
             'src/engine/light.coffee'
+            'src/game/wall.coffee'
             'src/game/player.coffee'
             'src/tick.coffee'
             'src/start.coffee'
