@@ -1,4 +1,4 @@
-DEV = false
+DEV = true
 
 module.exports = (grunt) ->
   require('load-grunt-tasks')(grunt)
@@ -19,6 +19,7 @@ module.exports = (grunt) ->
             'src/engine/utils.coffee'
             'src/engine/camera.coffee'
             'src/engine/light.coffee'
+            'src/game/player.coffee'
             'src/tick.coffee'
             'src/start.coffee'
             'src/main.coffee'

@@ -18,6 +18,7 @@ Lighting =
 
       # draw shadow
       for i in [0..light.r / 4] # why 4?
+        Lighting.filter.beginFill light.c, 0
         Lighting.filter.lineStyle 2, 0x000000, 1 - i / 50
         Lighting.filter.drawCircle light.x, light.y, light.r - i * 2
 

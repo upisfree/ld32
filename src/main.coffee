@@ -7,7 +7,6 @@ window.h = window.innerHeight
 animate = ->
   requestAnimFrame animate
 
-  Lighting.render()
   Game.tick()
 
   renderer.render stage
