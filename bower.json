@@ -12,6 +12,7 @@
     "bower_components"
   ],
   "dependencies": {
-    "pixi.js": "~2.2.9"
+    "pixi.js": "~2.2.9",
+    "matter-js": "~0.8.0-alpha"
   }
 }
