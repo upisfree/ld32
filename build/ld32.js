@@ -126,8 +126,59 @@
       return this;
     }
 
-    Wall.prototype.isCollide = function(x, y) {
-      return console.log('wow');
+    Wall.prototype.isCollide = function(a, b) {
+      var i, i1, i2, j, maxA, maxB, minA, minB, normal, p1, p2, polygon, polygons, projected;
+      polygons = [a, b];
+      minA = void 0;
+      maxA = void 0;
+      projected = void 0;
+      i = void 0;
+      i1 = void 0;
+      j = void 0;
+      minB = void 0;
+      maxB = void 0;
+      i = 0;
+      while (i < polygons.length) {
+        polygon = polygons[i];
+        while (i1 < polygon.length) {
+          i2 = (i1 + 1) % polygon.length;
+          p1 = polygon[i1];
+          p2 = polygon[i2];
+          normal = {
+            x: p2.y - p1.y,
+            y: p1.x - p2.x
+          };
+          minA = maxA = void 0;
+          while (j < a.length) {
+            projected = normal.x * a[j].x + normal.y * a[j].y;
+            if (isUndefined(minA) || projected < minA) {
+              minA = projected;
+            }
+            if (isUndefined(maxA) || projected > maxA) {
+              maxA = projected;
+            }
+            j++;
+          }
+          minB = maxB = void 0;
+          while (j < b.length) {
+            projected = normal.x * b[j].x + normal.y * b[j].y;
+            if (isUndefined(minB) || projected < minB) {
+              minB = projected;
+            }
+            if (isUndefined(maxB) || projected > maxB) {
+              maxB = projected;
+            }
+            j++;
+          }
+          if (maxA < minB || maxB < minA) {
+            console.log('polygons don\'t intersect!');
+            return false;
+          }
+          i1++;
+        }
+        i++;
+      }
+      return true;
     };
 
     return Wall;
@@ -138,7 +189,7 @@
 
   Player = (function() {
     function Player(x, y) {
-      this.s = PIXI.Sprite.fromImage('http://i.imgur.com/S1gYEDP.png');
+      this.s = PIXI.Sprite.fromImage('http://i.imgur.com/N68T2hB.png');
       this.s.width = 100;
       this.s.height = 100;
       this.s.anchor.x = 0.5;
@@ -167,18 +218,39 @@
         return Mouse.y = e.y;
       };
       return window.onkeydown = function(e2) {
-        var distance, limit, m, v;
+        var distance, limit, m, v, wall, _i, _j, _len, _len1, _results, _results1;
         distance = 2.5;
         limit = 10;
         v = vectorFromAngle(p.s.rotation);
-        m = 10;
+        m = 20;
         switch (e2.keyCode) {
           case 87:
           case 38:
-            return p.move(v.x * m, v.y * m);
+            p.move(v.x * m, v.y * m);
+            _results = [];
+            for (_i = 0, _len = walls.length; _i < _len; _i++) {
+              wall = walls[_i];
+              if (!wall.isCollide(p.s.position.x + (v.x * m), p.s.position.y + (v.y * m))) {
+                _results.push(console.log('isCollide'));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+            break;
           case 83:
           case 40:
-            return p.move(-v.x * m, -v.y * m);
+            p.move(-v.x * m, -v.y * m);
+            _results1 = [];
+            for (_j = 0, _len1 = walls.length; _j < _len1; _j++) {
+              wall = walls[_j];
+              if (!wall.isCollide(p.s.position.x + (-v.x * m), p.s.position.y + (-v.y * m))) {
+                _results1.push(console.log('isCollide'));
+              } else {
+                _results1.push(void 0);
+              }
+            }
+            return _results1;
         }
       };
     };
@@ -188,7 +260,38 @@
   })();
 
   Game.tick = function() {
+    var bounds;
     player.s.rotation = Math.atan2(window.h / 2 - Mouse.y, window.w / 2 - Mouse.x) - Math.PI / 2;
+    bounds = player.s.getBounds();
+    walls[0].isCollide([
+      {
+        x: bounds.x,
+        y: bounds.y
+      }, {
+        x: bounds.x + bounds.width,
+        y: bounds.y / Math.sin(Math.rToD(player.s.rotation))
+      }, {
+        x: Math.sqrt(bounds.width ^ 2 + bounds.height ^ 2) / Math.cos(Math.rToD(player.s.rotation)),
+        y: Math.sqrt(bounds.width ^ 2 + bounds.height ^ 2) / Math.sin(Math.rToD(player.s.rotation))
+      }, {
+        x: bounds.x / Math.cos(Math.rToD(player.s.rotation)),
+        y: bounds.x + bounds.height
+      }
+    ], [
+      {
+        x: walls[0].s.position.x,
+        y: walls[0].s.position.y
+      }, {
+        x: walls[0].s.position.x + walls[0].s.width,
+        y: walls[0].s.position.y
+      }, {
+        x: walls[0].s.position.x + walls[0].s.width,
+        y: walls[0].s.position.y + walls[0].s.height
+      }, {
+        x: walls[0].s.position.x,
+        y: walls[0].s.position.y + walls[0].s.height
+      }
+    ]);
     return Camera.set(window.w / 2 - player.s.position.x, window.h / 2 - player.s.position.y);
   };
 
