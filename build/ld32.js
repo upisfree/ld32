@@ -131,15 +131,18 @@
 
     Player.prototype.enableControlling = function(p) {
       return window.onkeydown = function(e) {
-        var distance;
-        distance = 5;
+        var distance, limit;
+        distance = 2.5;
+        limit = 10;
         switch (e.keyCode) {
           case 87:
           case 38:
             if (Math.rToD(p.s.rotation) !== 0) {
               return p.s.rotation = Math.dToR(0);
             } else {
-              return p.speed.y -= distance;
+              if (p.speed.y > -limit) {
+                return p.speed.y -= distance;
+              }
             }
             break;
           case 68:
@@ -147,7 +150,9 @@
             if (Math.rToD(p.s.rotation) !== 90) {
               return p.s.rotation = Math.dToR(90);
             } else {
-              return p.speed.x += distance;
+              if (p.speed.x < limit) {
+                return p.speed.x += distance;
+              }
             }
             break;
           case 83:
@@ -155,7 +160,9 @@
             if (Math.rToD(p.s.rotation) !== 180) {
               return p.s.rotation = Math.dToR(180);
             } else {
-              return p.speed.y += distance;
+              if (p.speed.y < limit) {
+                return p.speed.y += distance;
+              }
             }
             break;
           case 65:
@@ -163,7 +170,9 @@
             if (Math.rToD(p.s.rotation) !== 270) {
               return p.s.rotation = Math.dToR(270);
             } else {
-              return p.speed.x -= distance;
+              if (p.speed.x > -limit) {
+                return p.speed.x -= distance;
+              }
             }
         }
       };

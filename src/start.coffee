@@ -21,7 +21,17 @@ Game.start = ->
   #zombie.position.y = window.h - zombie.height
   #container.addChild zombie
 
+
+  #floor = new PIXI.TilingSprite PIXI.Texture.fromImage('http://i.imgur.com/RgDhleZ.png')
+  #floor.width = window.w
+  #floor.height = window.h
+  #floor.position = { x: 0, y: 0 }
+  #floor.tilePosition = { x: 0, y: 0 }
+  #container.addChild floor
+
   player = new Player 100, 100
+
+
 
   #gl = new PIXI.Graphics()
   #gl.beginFill 0x000000, 1

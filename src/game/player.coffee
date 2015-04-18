@@ -23,26 +23,27 @@ class Player
     @s.position.y = y
   enableControlling: (p) ->
     window.onkeydown = (e) ->
-      distance = 5
+      distance = 2.5
+      limit = 10
 
       switch e.keyCode
         when 87, 38 # up
           if Math.rToD(p.s.rotation) isnt 0
             p.s.rotation = Math.dToR 0
           else
-            p.speed.y -= distance
+            p.speed.y -= distance if p.speed.y > -limit
         when 68, 39 # right
           if Math.rToD(p.s.rotation) isnt 90
             p.s.rotation = Math.dToR 90
           else
-            p.speed.x += distance
+            p.speed.x += distance if p.speed.x < limit
         when 83, 40 # down
           if Math.rToD(p.s.rotation) isnt 180
             p.s.rotation = Math.dToR 180
           else
-            p.speed.y += distance
+            p.speed.y += distance if p.speed.y < limit
         when 65, 37 # left
           if Math.rToD(p.s.rotation) isnt 270
             p.s.rotation = Math.dToR 270
           else
-            p.speed.x -= distance
+            p.speed.x -= distance if p.speed.x > -limit
