@@ -1,12 +1,14 @@
 class Player
   constructor: (x, y) ->
     @s = PIXI.Sprite.fromImage 'http://i.imgur.com/S1gYEDP.png'
-    @s.width = 150
+    @s.width = 100
     @s.height = 100
     @s.anchor.x = 0.5
     @s.anchor.y = 0.5
     @s.position.x = x
     @s.position.y = y
+
+    @speed = new PIXI.Point 0, 0
 
     container.addChild @s
 
@@ -21,12 +23,26 @@ class Player
     @s.position.y = y
   enableControlling: (p) ->
     window.onkeydown = (e) ->
+      distance = 5
+
       switch e.keyCode
         when 87, 38 # up
-          p.s.rotation = Math.dToR 0
-        when 83, 40 # down
-          p.s.rotation = Math.dToR 180
-        when 65, 37 # left
-          p.s.rotation = Math.dToR 270
+          if Math.rToD(p.s.rotation) isnt 0
+            p.s.rotation = Math.dToR 0
+          else
+            p.speed.y -= distance
         when 68, 39 # right
-          p.s.rotation = Math.dToR 90
+          if Math.rToD(p.s.rotation) isnt 90
+            p.s.rotation = Math.dToR 90
+          else
+            p.speed.x += distance
+        when 83, 40 # down
+          if Math.rToD(p.s.rotation) isnt 180
+            p.s.rotation = Math.dToR 180
+          else
+            p.speed.y += distance
+        when 65, 37 # left
+          if Math.rToD(p.s.rotation) isnt 270
+            p.s.rotation = Math.dToR 270
+          else
+            p.speed.x -= distance

@@ -107,12 +107,13 @@
   Player = (function() {
     function Player(x, y) {
       this.s = PIXI.Sprite.fromImage('http://i.imgur.com/S1gYEDP.png');
-      this.s.width = 150;
+      this.s.width = 100;
       this.s.height = 100;
       this.s.anchor.x = 0.5;
       this.s.anchor.y = 0.5;
       this.s.position.x = x;
       this.s.position.y = y;
+      this.speed = new PIXI.Point(0, 0);
       container.addChild(this.s);
       this.enableControlling(this);
       return this;
@@ -130,19 +131,40 @@
 
     Player.prototype.enableControlling = function(p) {
       return window.onkeydown = function(e) {
+        var distance;
+        distance = 5;
         switch (e.keyCode) {
           case 87:
           case 38:
-            return p.s.rotation = Math.dToR(0);
-          case 83:
-          case 40:
-            return p.s.rotation = Math.dToR(180);
-          case 65:
-          case 37:
-            return p.s.rotation = Math.dToR(270);
+            if (Math.rToD(p.s.rotation) !== 0) {
+              return p.s.rotation = Math.dToR(0);
+            } else {
+              return p.speed.y -= distance;
+            }
+            break;
           case 68:
           case 39:
-            return p.s.rotation = Math.dToR(90);
+            if (Math.rToD(p.s.rotation) !== 90) {
+              return p.s.rotation = Math.dToR(90);
+            } else {
+              return p.speed.x += distance;
+            }
+            break;
+          case 83:
+          case 40:
+            if (Math.rToD(p.s.rotation) !== 180) {
+              return p.s.rotation = Math.dToR(180);
+            } else {
+              return p.speed.y += distance;
+            }
+            break;
+          case 65:
+          case 37:
+            if (Math.rToD(p.s.rotation) !== 270) {
+              return p.s.rotation = Math.dToR(270);
+            } else {
+              return p.speed.x -= distance;
+            }
         }
       };
     };
@@ -151,7 +173,20 @@
 
   })();
 
-  Game.tick = function() {};
+  Game.tick = function() {
+    if (player.speed.x > 0) {
+      player.speed.x -= 1;
+    } else if (player.speed.x < 0) {
+      player.speed.x += 1;
+    }
+    if (player.speed.y > 0) {
+      player.speed.y -= 1;
+    } else if (player.speed.y < 0) {
+      player.speed.y += 1;
+    }
+    player.s.position.x += player.speed.x;
+    return player.s.position.y += player.speed.y;
+  };
 
   Game.start = function() {
     stage = new PIXI.Stage(0xffffff);
