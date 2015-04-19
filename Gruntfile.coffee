@@ -13,16 +13,9 @@ module.exports = (grunt) ->
           join: true
         files:
           'build/<%= pkg.name %>.js': [
-            'src/globals.coffee'
-            'src/config.coffee'
             'src/engine/math.coffee'
             'src/engine/utils.coffee'
             'src/engine/camera.coffee'
-            'src/engine/light.coffee'
-            'src/game/wall.coffee'
-            'src/game/player.coffee'
-            'src/tick.coffee'
-            'src/start.coffee'
             'src/main.coffee'
           ]
 

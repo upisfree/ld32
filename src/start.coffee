@@ -1,11 +1,11 @@
-Game.start = ->
-  stage = new PIXI.Stage 0xffffff
-  renderer = new PIXI.WebGLRenderer window.w, window.h
-  renderer.view.style.zIndex = 1
-  document.body.appendChild renderer.view
+#Game.start = ->
+  #stage = new PIXI.Stage 0xffffff
+  #renderer = new PIXI.WebGLRenderer window.w, window.h
+  #renderer.view.style.zIndex = 1
+  #document.body.appendChild renderer.view
 
-  container = new PIXI.DisplayObjectContainer()
-  stage.addChild container
+  #container = new PIXI.DisplayObjectContainer()
+  #stage.addChild container
 
   #city = PIXI.Sprite.fromImage 'http://i.imgur.com/zRabOpb.gif'
   #city.width = window.w
@@ -28,8 +28,8 @@ Game.start = ->
   #zombie.position.y = window.h - zombie.height
   #container.addChild zombie
 
-  wall = new Wall 500, 500, 200, 600, 'http://i.imgur.com/RgDhleZ.png'
+  #wall = new Wall 500, 500, 200, 600, 'http://i.imgur.com/RgDhleZ.png'
 
-  player = new Player 100, 100
+  #player = new Player 100, 100
 
-  requestAnimFrame animate
+  #requestAnimFrame animate
