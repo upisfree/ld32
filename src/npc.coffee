@@ -14,7 +14,7 @@ class NPC
     @body.label += ',npc'
 
     Matter.Composite.add Engine.world, @body
-    npcs.push @body
+    npcs.push @
   destroy: ->
     Matter.Composite.remove Engine.world, @body
-    npcs.splice npcs.indexOf(@body), 1
+    npcs.splice npcs.indexOf(@), 1
