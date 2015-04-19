@@ -140,7 +140,7 @@
 
   Matter.Engine.run(Engine);
 
-  player = Matter.Bodies.rectangle(100, 100, 150, 100, {
+  player = Matter.Bodies.rectangle(window.w / 2, window.h / 2, 150, 100, {
     render: {
       fillStyle: null,
       sprite: {
@@ -151,8 +151,10 @@
     }
   });
 
-  console.log(Engine);
-
   Matter.Composite.add(Engine.world, player);
+
+  window.onmousemove = function(e) {
+    return player.angle = Math.atan2(window.h / 2 - e.y, window.w / 2 - e.x) - Math.PI / 2;
+  };
 
 }).call(this);

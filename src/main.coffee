@@ -86,8 +86,8 @@ Matter.Engine.run Engine
 
 #  Engine.render.spriteBatch.filters = [filter.pixel]
 
-# Spawn player
-player = Matter.Bodies.rectangle 100, 100, 150, 100,
+# player
+player = Matter.Bodies.rectangle window.w / 2, window.h / 2, 150, 100,
   render:
     fillStyle: null
     sprite:
@@ -95,9 +95,27 @@ player = Matter.Bodies.rectangle 100, 100, 150, 100,
       yScale: 0
       texture: 'assets/player-1.png'
 
-console.log Engine
-
 Matter.Composite.add Engine.world, player
+
+
+window.onmousemove = (e) ->
+  player.angle = Math.atan2(window.h / 2 - e.y, window.w / 2 - e.x) - Math.PI / 2
+
+
+#/ player
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #player = new Player Screen.size.x / 2, Screen.size.y / 2
 #Camera.followPlayer player
