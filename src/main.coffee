@@ -91,6 +91,7 @@ Matter.Engine.run Engine
 # player
 player = Matter.Bodies.rectangle window.w / 2, window.h / 2, 150, 100,
   mass: 1000
+  frictionAir: 0.1
   render:
     fillStyle: null
     sprite:
@@ -116,6 +117,16 @@ window.onkeydown = (e) -> # TODO: Mousetrap
 
 
 
+lala = Matter.Bodies.rectangle 100, 100, 150, 100,
+  mass: 1000
+  render:
+    fillStyle: null
+    sprite:
+      xScale: 0
+      yScale: 0
+      texture: 'assets/player-1.png'
+
+Matter.Composite.add Engine.world, lala
 
 
 
@@ -131,7 +142,6 @@ window.onkeydown = (e) -> # TODO: Mousetrap
 #Camera.followPlayer player
 
 Matter.Events.on Engine, 'tick', (e) ->
+  Camera.set window.w / 2 - player.position.x, window.h / 2 - player.position.y
+  
   player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2
-  #Camera.set
-  #  x: window.w / 2 - player.position.x
-  #  y: window.h / 2 - player.position.y
