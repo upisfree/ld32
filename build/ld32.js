@@ -1,5 +1,5 @@
 (function() {
-  var Engine, MIN_SAMPLES, NPC, analyser, audioContext, buf, buflen, getByClass, getById, getByTag, gotStream, i, mediaStreamSource, mx, my, npcs, player, scene, setCamera, updateMirco, vectorFromAngle, _i;
+  var Engine, LIFES, MIN_SAMPLES, NPC, analyser, audioContext, buf, buflen, getByClass, getById, getByTag, gotStream, i, mediaStreamSource, mx, my, npcs, player, scene, setCamera, updateMirco, vectorFromAngle, _i;
 
   Math.randomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -59,7 +59,7 @@
         frictionAir: 0.1,
         render: {
           sprite: {
-            texture: 'assets/player-2.png'
+            texture: 'assets/zombie.png'
           }
         }
       });
@@ -89,6 +89,8 @@
   mx = 0;
 
   my = 0;
+
+  LIFES = 500;
 
   scene = PIXI.Sprite.fromImage('assets/scene.png');
 
@@ -243,14 +245,23 @@
   }
 
   Matter.Events.on(Engine, 'collisionActive', function(e) {
-    var pair, _j, _len, _ref;
+    var pair, _j, _len, _ref, _results;
     _ref = e.pairs;
+    _results = [];
     for (_j = 0, _len = _ref.length; _j < _len; _j++) {
       pair = _ref[_j];
       if ((pair.bodyA.label.split(',')[2] === 'player' && pair.bodyB.label.split(',')[2] === 'npc') || (pair.bodyB.label.split(',')[2] === 'player' && pair.bodyA.label.split(',')[2] === 'npc')) {
-        return;
+        if (LIFES === -1) {
+          alert('А ТЫ УМЕР, НАЖМИ РАЗРЕШИТЬ');
+          location.reload();
+        }
+        LIFES -= 1;
+        _results.push(getById('lifes').innerText = 'ЖИЗНЕЙ: ' + LIFES);
+      } else {
+        _results.push(void 0);
       }
     }
+    return _results;
   });
 
   MIN_SAMPLES = 0;
@@ -337,7 +348,12 @@
     analyser.getFloatTimeDomainData(buf);
     ac = autoCorrelate(buf, audioContext.sampleRate);
     if (ac > 50 && ac < 300 && Math.random() < 0.25) {
-      return npcs[Math.randomInt(0, npcs.length - 1)].destroy();
+      if (npcs.length === 0) {
+        alert('А ТЫ ВЫЙГРАЛ НАЖМИ РАЗРЕШИТЬ');
+        return location.reload();
+      } else {
+        return npcs[Math.randomInt(0, npcs.length - 1)].destroy();
+      }
     }
   };
 
@@ -365,7 +381,7 @@
       y: window.h / 2 - player.position.y
     });
     player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2;
-    if (Math.random() < 0.005) {
+    if (Math.random() < 0.05) {
       for (i = _j = 0; _j < 3; i = ++_j) {
         new NPC(player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2));
       }
@@ -383,7 +399,7 @@
         }, {
           x: player.position.x,
           y: player.position.y
-        }), -0.15)));
+        }), -0.1)));
       }
       return _results;
     }

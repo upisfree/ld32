@@ -6,6 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:800&subset=latin" rel="stylesheet" type="text/css">
+
     <title>ld32</title>
 
     <style>
@@ -13,12 +15,24 @@ body
 {
   margin: 0;
   padding: 0;
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-weight: 900;
   overflow: hidden;
+}
+.stats
+{
+  color: white;
+  position: absolute;
+  left: 20px;
+  font-size: 32px;
+  z-index: 10;
 }
     </style>
   </head>
 
   <body>
+    <h1 id="lifes" class="stats" style="top: 0; display: block;">ЖИЗНЕЙ: 1000</h1>
+
     <script src="./build/lib.js"></script>
     <script src="./build/ld32.js"></script>
   </body>

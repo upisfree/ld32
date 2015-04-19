@@ -7,7 +7,7 @@ class NPC
       frictionAir: 0.1
       render:
         sprite:
-          texture: 'assets/player-2.png'
+          texture: 'assets/zombie.png'
 
     @body.i = npcs.length
 

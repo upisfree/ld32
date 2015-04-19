@@ -7,6 +7,7 @@ window.h = window.innerHeight
 mx = 0
 my = 0
 
+LIFES = 500
 
 scene = PIXI.Sprite.fromImage 'assets/scene.png'
 scene.width = window.w
@@ -167,13 +168,12 @@ Matter.Events.on Engine, 'collisionActive', (e) ->
   for pair in e.pairs
     if (pair.bodyA.label.split(',')[2] is 'player' and pair.bodyB.label.split(',')[2] is 'npc') or
        (pair.bodyB.label.split(',')[2] is 'player' and pair.bodyA.label.split(',')[2] is 'npc')
-      return
-      #console.log 'DIE'
-
-
-
-
-
+      if LIFES is -1
+        alert 'А ТЫ УМЕР, НАЖМИ РАЗРЕШИТЬ'
+        location.reload()
+      
+      LIFES -= 1
+      getById('lifes').innerText = 'ЖИЗНЕЙ: ' + LIFES
 
 # microphone
 MIN_SAMPLES = 0
@@ -257,7 +257,11 @@ updateMirco = ->
   ac = autoCorrelate buf, audioContext.sampleRate
 
   if ac > 50 and ac < 300 and Math.random() < 0.25
-    npcs[Math.randomInt(0, npcs.length - 1)].destroy()
+    if npcs.length is 0
+      alert 'А ТЫ ВЫЙГРАЛ НАЖМИ РАЗРЕШИТЬ'
+      location.reload()
+    else
+      npcs[Math.randomInt(0, npcs.length - 1)].destroy()
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
 navigator.getUserMedia
@@ -271,7 +275,6 @@ navigator.getUserMedia
 , gotStream
 , ->
   console.log 'microphone fails'
-
 # /microphone
 
 Matter.Events.on Engine, 'tick', (e) ->
@@ -279,10 +282,10 @@ Matter.Events.on Engine, 'tick', (e) ->
   setCamera { x: window.w / 2 - player.position.x, y: window.h / 2 - player.position.y }
   player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2     
 
-  if Math.random() < 0.005
+  if Math.random() < 0.05
     for i in [0...3]
       new NPC player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2)  
 
   if Math.random() < 0.05
     for npc in npcs
-      Matter.Body.applyForce npc.body, { x: 0, y: 0 }, Matter.Vector.mult(Matter.Vector.sub({ x: npc.body.position.x, y: npc.body.position.y }, { x: player.position.x, y: player.position.y }), -0.15)
+      Matter.Body.applyForce npc.body, { x: 0, y: 0 }, Matter.Vector.mult(Matter.Vector.sub({ x: npc.body.position.x, y: npc.body.position.y }, { x: player.position.x, y: player.position.y }), -0.1)
