@@ -7,7 +7,35 @@ window.h = window.innerHeight
 mx = 0
 my = 0
 
+
+scene = PIXI.Sprite.fromImage 'assets/scene.png'
+scene.width = window.w
+scene.height = 1680
+scene.position.x = 0
+scene.position.y = window.h / 2 - scene.height
+
+
 # render
+Matter.RenderPixi.world = (engine) ->
+  render = engine.render
+  world = engine.world
+  map = engine.map
+  context = render.context
+  stage = render.stage
+  options = render.options
+  bodies = Matter.Composite.allBodies world
+  constraints = Matter.Composite.allConstraints world
+
+  render.spriteBatch.addChildAt scene, 0
+
+  for i in bodies
+    Matter.RenderPixi.body engine, i
+
+  for i in constraints
+    Matter.RenderPixi.constraint engine, i
+
+  context.render stage
+
 Matter.RenderPixi.body = (engine, body) -> # I hope we don't need primitives
   render = engine.render
   bodyRender = body.render
@@ -127,7 +155,7 @@ window.onkeydown = (e) -> # TODO: Mousetrap
     
 #/ player
 
-for i in [0...20]
+for i in [0...5]
   new NPC player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2)
 #f = new PIXI.PixelateFilter()
 #f.blur = 32
@@ -251,8 +279,10 @@ Matter.Events.on Engine, 'tick', (e) ->
   setCamera { x: window.w / 2 - player.position.x, y: window.h / 2 - player.position.y }
   player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2     
 
-  if Math.random() < 0.01
-    new NPC player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2)
+  if Math.random() < 0.005
+    for i in [0...3]
+      new NPC player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2)  
 
+  if Math.random() < 0.05
     for npc in npcs
-      Matter.Body.applyForce npc.body, { x: 0, y: 0 }, Matter.Vector.mult(Matter.Vector.sub({ x: npc.body.position.x, y: npc.body.position.y }, { x: player.position.x, y: player.position.y }), -0.1)
+      Matter.Body.applyForce npc.body, { x: 0, y: 0 }, Matter.Vector.mult(Matter.Vector.sub({ x: npc.body.position.x, y: npc.body.position.y }, { x: player.position.x, y: player.position.y }), -0.15)

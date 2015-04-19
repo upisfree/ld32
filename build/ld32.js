@@ -1,5 +1,5 @@
 (function() {
-  var Engine, MIN_SAMPLES, NPC, analyser, audioContext, buf, buflen, getByClass, getById, getByTag, gotStream, i, mediaStreamSource, mx, my, npcs, player, setCamera, updateMirco, vectorFromAngle, _i;
+  var Engine, MIN_SAMPLES, NPC, analyser, audioContext, buf, buflen, getByClass, getById, getByTag, gotStream, i, mediaStreamSource, mx, my, npcs, player, scene, setCamera, updateMirco, vectorFromAngle, _i;
 
   Math.randomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -89,6 +89,38 @@
   mx = 0;
 
   my = 0;
+
+  scene = PIXI.Sprite.fromImage('assets/scene.png');
+
+  scene.width = window.w;
+
+  scene.height = 1680;
+
+  scene.position.x = 0;
+
+  scene.position.y = window.h / 2 - scene.height;
+
+  Matter.RenderPixi.world = function(engine) {
+    var bodies, constraints, context, i, map, options, render, stage, world, _i, _j, _len, _len1;
+    render = engine.render;
+    world = engine.world;
+    map = engine.map;
+    context = render.context;
+    stage = render.stage;
+    options = render.options;
+    bodies = Matter.Composite.allBodies(world);
+    constraints = Matter.Composite.allConstraints(world);
+    render.spriteBatch.addChildAt(scene, 0);
+    for (_i = 0, _len = bodies.length; _i < _len; _i++) {
+      i = bodies[_i];
+      Matter.RenderPixi.body(engine, i);
+    }
+    for (_j = 0, _len1 = constraints.length; _j < _len1; _j++) {
+      i = constraints[_j];
+      Matter.RenderPixi.constraint(engine, i);
+    }
+    return context.render(stage);
+  };
 
   Matter.RenderPixi.body = function(engine, body) {
     var bodyRender, render, sprite, spriteBatch, spriteId;
@@ -206,7 +238,7 @@
     }
   };
 
-  for (i = _i = 0; _i < 20; i = ++_i) {
+  for (i = _i = 0; _i < 5; i = ++_i) {
     new NPC(player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2));
   }
 
@@ -326,18 +358,22 @@
   });
 
   Matter.Events.on(Engine, 'tick', function(e) {
-    var npc, _j, _len, _results;
+    var npc, _j, _k, _len, _results;
     updateMirco();
     setCamera({
       x: window.w / 2 - player.position.x,
       y: window.h / 2 - player.position.y
     });
     player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2;
-    if (Math.random() < 0.01) {
-      new NPC(player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2));
+    if (Math.random() < 0.005) {
+      for (i = _j = 0; _j < 3; i = ++_j) {
+        new NPC(player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2));
+      }
+    }
+    if (Math.random() < 0.05) {
       _results = [];
-      for (_j = 0, _len = npcs.length; _j < _len; _j++) {
-        npc = npcs[_j];
+      for (_k = 0, _len = npcs.length; _k < _len; _k++) {
+        npc = npcs[_k];
         _results.push(Matter.Body.applyForce(npc.body, {
           x: 0,
           y: 0
@@ -347,7 +383,7 @@
         }, {
           x: player.position.x,
           y: player.position.y
-        }), -0.1)));
+        }), -0.15)));
       }
       return _results;
     }
