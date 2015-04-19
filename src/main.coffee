@@ -4,6 +4,8 @@ window.ontouchmove = (e) ->
 window.w = window.innerWidth
 window.h = window.innerHeight
 
+mx = 0
+my = 0
 
 # render
 Matter.RenderPixi.body = (engine, body) -> # I hope we don't need primitives
@@ -88,6 +90,7 @@ Matter.Engine.run Engine
 
 # player
 player = Matter.Bodies.rectangle window.w / 2, window.h / 2, 150, 100,
+  mass: 1000
   render:
     fillStyle: null
     sprite:
@@ -99,9 +102,16 @@ Matter.Composite.add Engine.world, player
 
 
 window.onmousemove = (e) ->
-  player.angle = Math.atan2(window.h / 2 - e.y, window.w / 2 - e.x) - Math.PI / 2
+  mx = e.x
+  my = e.y
 
-
+window.onkeydown = (e) -> # TODO: Mousetrap
+  switch e.keyCode
+    when 87, 38 # up
+      Matter.Body.applyForce player, { x: 0, y: 0 }, Matter.Vector.mult(vectorFromAngle(player.angle), 10)
+    when 83, 40 # down
+      Matter.Body.applyForce player, { x: 0, y: 0 }, Matter.Vector.neg(Matter.Vector.mult(vectorFromAngle(player.angle), 10))
+    
 #/ player
 
 
@@ -120,7 +130,8 @@ window.onmousemove = (e) ->
 #player = new Player Screen.size.x / 2, Screen.size.y / 2
 #Camera.followPlayer player
 
-#Matter.Events.on Engine, 'tick', (e) ->
+Matter.Events.on Engine, 'tick', (e) ->
+  player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2
   #Camera.set
   #  x: window.w / 2 - player.position.x
   #  y: window.h / 2 - player.position.y

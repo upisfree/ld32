@@ -1,5 +1,5 @@
 (function() {
-  var Camera, Engine, getByClass, getById, getByTag, player, vectorFromAngle;
+  var Camera, Engine, getByClass, getById, getByTag, mx, my, player, vectorFromAngle;
 
   Math.randomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -63,6 +63,10 @@
   window.w = window.innerWidth;
 
   window.h = window.innerHeight;
+
+  mx = 0;
+
+  my = 0;
 
   Matter.RenderPixi.body = function(engine, body) {
     var bodyRender, render, sprite, spriteBatch, spriteId;
@@ -141,6 +145,7 @@
   Matter.Engine.run(Engine);
 
   player = Matter.Bodies.rectangle(window.w / 2, window.h / 2, 150, 100, {
+    mass: 1000,
     render: {
       fillStyle: null,
       sprite: {
@@ -154,7 +159,29 @@
   Matter.Composite.add(Engine.world, player);
 
   window.onmousemove = function(e) {
-    return player.angle = Math.atan2(window.h / 2 - e.y, window.w / 2 - e.x) - Math.PI / 2;
+    mx = e.x;
+    return my = e.y;
   };
+
+  window.onkeydown = function(e) {
+    switch (e.keyCode) {
+      case 87:
+      case 38:
+        return Matter.Body.applyForce(player, {
+          x: 0,
+          y: 0
+        }, Matter.Vector.mult(vectorFromAngle(player.angle), 10));
+      case 83:
+      case 40:
+        return Matter.Body.applyForce(player, {
+          x: 0,
+          y: 0
+        }, Matter.Vector.neg(Matter.Vector.mult(vectorFromAngle(player.angle), 10)));
+    }
+  };
+
+  Matter.Events.on(Engine, 'tick', function(e) {
+    return player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2;
+  });
 
 }).call(this);
