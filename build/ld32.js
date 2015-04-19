@@ -1,5 +1,5 @@
 (function() {
-  var Camera, Engine, getByClass, getById, getByTag, lala, mx, my, player, vectorFromAngle;
+  var Engine, NPC, getByClass, getById, getByTag, i, mx, my, npcs, player, setCamera, vectorFromAngle, _i;
 
   Math.randomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -50,11 +50,33 @@
     return document.getElementsByTagName(tag);
   };
 
-  Camera = {
-    set: function(x, y) {
-      return Engine.render.context.offset = new PIXI.Point(x, y);
+  npcs = [];
+
+  NPC = (function() {
+    function NPC(x, y) {
+      this.body = Matter.Bodies.rectangle(x, y, 125, 75, {
+        mass: 1000,
+        frictionAir: 0.1,
+        render: {
+          sprite: {
+            texture: 'assets/player-2.png'
+          }
+        }
+      });
+      this.body.i = npcs.length;
+      this.body.label += ',npc';
+      Matter.Composite.add(Engine.world, this.body);
+      npcs.push(this.body);
     }
-  };
+
+    NPC.prototype.destroy = function() {
+      Matter.Composite.remove(Engine.world, this.body);
+      return npcs.splice(npcs.indexOf(this.body), 1);
+    };
+
+    return NPC;
+
+  })();
 
   window.ontouchmove = function(e) {
     return e.preventDefault();
@@ -144,20 +166,23 @@
 
   Matter.Engine.run(Engine);
 
-  player = Matter.Bodies.rectangle(window.w / 2, window.h / 2, 150, 100, {
+  setCamera = function(p) {
+    return Engine.render.context.offset = new PIXI.Point(p.x, p.y);
+  };
+
+  player = Matter.Bodies.rectangle(window.w / 2, window.h / 2, 125, 75, {
     mass: 1000,
     frictionAir: 0.1,
     render: {
-      fillStyle: null,
       sprite: {
-        xScale: 0,
-        yScale: 0,
-        texture: 'assets/player-1.png'
+        texture: 'assets/player-2.png'
       }
     }
   });
 
   Matter.Composite.add(Engine.world, player);
+
+  player.label += ',player';
 
   window.onmousemove = function(e) {
     mx = e.x;
@@ -181,23 +206,49 @@
     }
   };
 
-  lala = Matter.Bodies.rectangle(100, 100, 150, 100, {
-    mass: 1000,
-    render: {
-      fillStyle: null,
-      sprite: {
-        xScale: 0,
-        yScale: 0,
-        texture: 'assets/player-1.png'
+  for (i = _i = 0; _i < 2; i = ++_i) {
+    new NPC(Math.randomInt(0, window.w), Math.randomInt(0, window.h));
+  }
+
+  Matter.Events.on(Engine, 'collisionActive', function(e) {
+    var pair, _j, _len, _ref, _results;
+    _ref = e.pairs;
+    _results = [];
+    for (_j = 0, _len = _ref.length; _j < _len; _j++) {
+      pair = _ref[_j];
+      if ((pair.bodyA.label.split(',')[2] === 'player' && pair.bodyB.label.split(',')[2] === 'npc') || (pair.bodyB.label.split(',')[2] === 'player' && pair.bodyA.label.split(',')[2] === 'npc')) {
+        _results.push(console.log('DIE'));
+      } else {
+        _results.push(void 0);
       }
     }
+    return _results;
   });
 
-  Matter.Composite.add(Engine.world, lala);
-
   Matter.Events.on(Engine, 'tick', function(e) {
-    Camera.set(window.w / 2 - player.position.x, window.h / 2 - player.position.y);
-    return player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2;
+    var npc, _j, _len, _results;
+    setCamera({
+      x: window.w / 2 - player.position.x,
+      y: window.h / 2 - player.position.y
+    });
+    player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2;
+    if (Math.random() < 0.1) {
+      _results = [];
+      for (_j = 0, _len = npcs.length; _j < _len; _j++) {
+        npc = npcs[_j];
+        _results.push(Matter.Body.applyForce(npc, {
+          x: 0,
+          y: 0
+        }, Matter.Vector.mult(Matter.Vector.sub({
+          x: npc.position.x,
+          y: npc.position.y
+        }, {
+          x: player.position.x,
+          y: player.position.y
+        }), -0.1)));
+      }
+      return _results;
+    }
   });
 
 }).call(this);
