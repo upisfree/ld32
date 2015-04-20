@@ -1,5 +1,5 @@
 (function() {
-  var Engine, LIFES, MIN_SAMPLES, NPC, analyser, audioContext, buf, buflen, getByClass, getById, getByTag, gotStream, i, mediaStreamSource, mx, my, npcs, player, scene, setCamera, updateMirco, vectorFromAngle, _i;
+  var Engine, LIFES, MIN_SAMPLES, NPC, analyser, audioContext, buf, buflen, color, destroyAllNPC, getByClass, getById, getByTag, getRandomColor, gotStream, i, mediaStreamSource, mx, my, npcs, player, rgbToHex, scene, setCamera, updateMirco, vectorFromAngle, _i;
 
   Math.randomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -52,6 +52,16 @@
 
   npcs = [];
 
+  destroyAllNPC = function() {
+    var i;
+    i = 0;
+    while (i < npcs.length - 1) {
+      npcs[i].destroy();
+      i += 1;
+    }
+    return npcs = [];
+  };
+
   NPC = (function() {
     function NPC(x, y) {
       this.body = Matter.Bodies.rectangle(x, y, 125, 75, {
@@ -70,8 +80,7 @@
     }
 
     NPC.prototype.destroy = function() {
-      Matter.Composite.remove(Engine.world, this.body);
-      return npcs.splice(npcs.indexOf(this), 1);
+      return Matter.Composite.remove(Engine.world, this.body);
     };
 
     return NPC;
@@ -101,6 +110,55 @@
   scene.position.x = 0;
 
   scene.position.y = window.h / 2 - scene.height;
+
+  Matter.RenderPixi.create = function(options) {
+    var defaults, render;
+    defaults = {
+      controller: Matter.RenderPixi,
+      element: null,
+      canvas: null,
+      options: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        background: '#ffffff',
+        wireframeBackground: '#222',
+        enabled: true,
+        wireframes: true,
+        showSleeping: true,
+        showDebug: false,
+        showBroadphase: false,
+        showBounds: false,
+        showVelocity: false,
+        showCollisions: false,
+        showAxes: false,
+        showPositions: false,
+        showAngleIndicator: false,
+        showIds: false,
+        showShadows: false
+      }
+    };
+    render = Matter.Common.extend(defaults, options);
+    render.context = new PIXI.WebGLRenderer(window.innerWidth, window.innerHeight, render.canvas, true, true);
+    render.canvas = render.context.view;
+    render.stage = new PIXI.Stage();
+    render.textures = {};
+    render.sprites = {};
+    render.primitives = {};
+    render.spriteBatch = new PIXI.DisplayObjectContainer();
+    render.stage.addChild(render.spriteBatch);
+    if (Matter.Common.isElement(render.element)) {
+      render.element.appendChild(render.canvas);
+    } else {
+      Matter.Common.log('No "render.element" passed, "render.canvas" was not inserted into document.', 'warn');
+    }
+    render.canvas.oncontextmenu = function() {
+      return false;
+    };
+    render.canvas.onselectstart = function() {
+      return false;
+    };
+    return render;
+  };
 
   Matter.RenderPixi.world = function(engine) {
     var bodies, constraints, context, i, map, options, render, stage, world, _i, _j, _len, _len1;
@@ -198,13 +256,16 @@
     }
   });
 
-  Matter.Engine.run(Engine);
+  setTimeout(function() {
+    getById('start-screen').style.display = 'none';
+    return Matter.Engine.run(Engine);
+  }, 2500);
 
   setCamera = function(p) {
     return Engine.render.context.offset = new PIXI.Point(p.x, p.y);
   };
 
-  player = Matter.Bodies.rectangle(window.w / 2, window.h / 2, 125, 75, {
+  player = Matter.Bodies.rectangle(window.w / 2, window.h / 2 - 300, 125, 75, {
     mass: 1000,
     frictionAir: 0.1,
     render: {
@@ -252,11 +313,16 @@
       pair = _ref[_j];
       if ((pair.bodyA.label.split(',')[2] === 'player' && pair.bodyB.label.split(',')[2] === 'npc') || (pair.bodyB.label.split(',')[2] === 'player' && pair.bodyA.label.split(',')[2] === 'npc')) {
         if (LIFES === -1) {
-          alert('А ТЫ УМЕР, НАЖМИ РАЗРЕШИТЬ');
-          location.reload();
+          getById('end-screen').style.display = 'block';
+          getByTag('canvas')[0].className = 'blur';
+          _results.push(setTimeout(function() {
+            return location.reload();
+          }, 5000));
+        } else {
+          Matter.RenderPixi.setBackground(Engine.render, rgbToHex(Math.randomInt(0, 255), 0, 0));
+          LIFES -= 1;
+          _results.push(getById('lifes').innerText = 'LIFES: ' + LIFES);
         }
-        LIFES -= 1;
-        _results.push(getById('lifes').innerText = 'ЖИЗНЕЙ: ' + LIFES);
       } else {
         _results.push(void 0);
       }
@@ -347,6 +413,7 @@
     cycles = new Array;
     analyser.getFloatTimeDomainData(buf);
     ac = autoCorrelate(buf, audioContext.sampleRate);
+    console.log(ac);
     if (ac > 50 && ac < 300 && Math.random() < 0.25) {
       if (npcs.length === 0) {
         alert('А ТЫ ВЫЙГРАЛ НАЖМИ РАЗРЕШИТЬ');
@@ -372,6 +439,22 @@
   }, gotStream, function() {
     return console.log('microphone fails');
   });
+
+  getRandomColor = function() {
+    return {
+      r: Math.randomInt(0, 255),
+      g: Math.randomInt(0, 255),
+      b: Math.randomInt(0, 255)
+    };
+  };
+
+  rgbToHex = function(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  };
+
+  color = getRandomColor();
+
+  Matter.RenderPixi.setBackground(Engine.render, rgbToHex(color.r, color.g, color.b));
 
   Matter.Events.on(Engine, 'tick', function(e) {
     var npc, _j, _k, _len, _results;

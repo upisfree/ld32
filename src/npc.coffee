@@ -1,5 +1,14 @@
 npcs = []
 
+destroyAllNPC = ->
+  i = 0
+  
+  while i < npcs.length - 1
+    npcs[i].destroy()
+    i += 1
+
+  npcs = []
+
 class NPC
   constructor: (x, y) ->
     @body = Matter.Bodies.rectangle x, y, 125, 75,
@@ -17,4 +26,4 @@ class NPC
     npcs.push @
   destroy: ->
     Matter.Composite.remove Engine.world, @body
-    npcs.splice npcs.indexOf(@), 1
+    #npcs.splice npcs.indexOf(@), 1

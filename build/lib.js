@@ -26060,7 +26060,7 @@ var RenderPixi = {};
         var render = Common.extend(defaults, options);
 
         // init pixi
-        render.context = new PIXI.WebGLRenderer(window.innerWidth, window.innerHeight, render.canvas, false, true);
+        render.context = new PIXI.WebGLRenderer(window.innerWidth, window.innerHeight, render.canvas, true, true);
         render.canvas = render.context.view;
         render.stage = new PIXI.Stage();
 
