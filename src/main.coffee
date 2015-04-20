@@ -9,14 +9,15 @@ my = 0
 
 LIFES = 500
 ZOMBIES = 0
-TIME = 0
+TIME = Date.now()
+
+bloodContainer = new PIXI.DisplayObjectContainer()
 
 scene = PIXI.Sprite.fromImage 'assets/scene.png'
 scene.width = window.w
 scene.height = 1680
 scene.position.x = 0
 scene.position.y = window.h / 2 - scene.height
-
 
 # render
 Matter.RenderPixi.create = (options) ->
@@ -81,6 +82,7 @@ Matter.RenderPixi.world = (engine) ->
   bodies = Matter.Composite.allBodies world
   constraints = Matter.Composite.allConstraints world
 
+  render.spriteBatch.addChildAt bloodContainer, 0
   render.spriteBatch.addChildAt scene, 0
 
   for i in bodies
@@ -164,6 +166,7 @@ Engine = Matter.Engine.create document.body,
 setTimeout ->
   getById('start-screen').style.display = 'none'
   Matter.Engine.run Engine
+  TIME = Date.now() # because time start before we begin play (the london is the capital of great britain)
 , 4000
 
 # camera
@@ -185,7 +188,7 @@ player = Matter.Bodies.rectangle window.w / 2, window.h / 2 - 300, 125, 75,
   frictionAir: 0.1
   render:
     sprite:
-      texture: 'assets/player-2.png'
+      texture: 'assets/player.png'
 
 Matter.Composite.add Engine.world, player
 
@@ -218,7 +221,7 @@ Matter.Events.on Engine, 'collisionActive', (e) ->
   for pair in e.pairs
     if (pair.bodyA.label.split(',')[2] is 'player' and pair.bodyB.label.split(',')[2] is 'npc') or
        (pair.bodyB.label.split(',')[2] is 'player' and pair.bodyA.label.split(',')[2] is 'npc')
-      if LIFES is -1
+      if LIFES is 0
         getById('end-screen').style.display = 'block'
         getByTag('canvas')[0].className = 'blur'
 
@@ -229,6 +232,7 @@ Matter.Events.on Engine, 'collisionActive', (e) ->
         Matter.RenderPixi.setBackground Engine.render, rgbToHex(Math.randomInt(0, 255), 0, 0)
         LIFES -= 1
         getById('lifes').innerText = 'LIFES: ' + LIFES
+        getByClass('player-hit')[Math.randomInt(0, 2)].play()
 
 # microphone
 MIN_SAMPLES = 0
@@ -306,6 +310,8 @@ gotStream = (stream) ->
     analyser.fftSize = 2048
     mediaStreamSource.connect analyser
 
+    TIME = Date.now() # because time start before we begin play (the london is the capital of great britain)
+
 updateMirco = ->
   cycles = new Array
   analyser.getFloatTimeDomainData buf
@@ -314,7 +320,7 @@ updateMirco = ->
   console.log ac
 
   if ac > 50 and ac < 300 #and Math.random() < 0.5
-    npcs[Math.randomInt(0, npcs.length - 1)].destroy()
+    npcs[npcs.length - 1].destroy()
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
 navigator.getUserMedia
@@ -327,7 +333,7 @@ navigator.getUserMedia
   "optional": []
 , gotStream
 , ->
-  console.log 'microphone fails'
+  alert 'Microphone fails! Can\'t play :('
 # /microphone
 
 # colors
@@ -345,7 +351,9 @@ Matter.RenderPixi.setBackground Engine.render, rgbToHex(color.r, color.g, color.
 Matter.Events.on Engine, 'tick', (e) ->
   updateMirco()
   setCamera { x: window.w / 2 - player.position.x, y: window.h / 2 - player.position.y }
-  player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2     
+  player.angle = Math.atan2(window.h / 2 - my, window.w / 2 - mx) - Math.PI / 2
+
+  getById('time').innerText = 'TIME: ' + ((Date.now() - TIME) / 1000).toFixed(1) + 's'
 
   if Math.random() < 0.05
     for i in [0...3]

@@ -11,7 +11,7 @@
     <style>
 @font-face {
   font-family: 'Video Terminal Screen';
-  src: url('http://www.fontsaddict.com/fontface/video-terminal-screen.TTF');
+  src: url('//fontsaddict.com/fontface/video-terminal-screen.TTF');
 }
 
 body
@@ -58,12 +58,22 @@ canvas
   </head>
 
   <body>
-    <h1 id="lifes" class="stats" style="top: 0; display: block;">LIFES: 1000</h1>
+    <h1 id="lifes" class="stats" style="top: 0; display: block;">LIFES: 500</h1>
+    <h1 id="time" class="stats" style="top: 48px; display: block;">TIME: 0</h1>
+    <h1 id="zombies" class="stats" style="top: 96px; display: block;">ZOMBIES: 0</h1>
 
-    <img id="start-screen" class="screen" src="./assets/start-screen.png">
-    <img id="end-screen" class="screen" src="./assets/end-screen.png" style="display: none;">
+    <img id="start-screen" class="screen" src="assets/start-screen.png">
+    <img id="end-screen" class="screen" src="assets/end-screen.png" style="display: none;">
 
-    <script src="./build/lib.js"></script>
-    <script src="./build/ld32.js"></script>
+    <audio class="zombie-death" src="assets/zombie-death.wav"></audio>
+    <audio class="zombie-death" src="assets/zombie-death.wav"></audio>
+    <audio class="zombie-death" src="assets/zombie-death.wav"></audio>
+
+    <audio class="player-hit" src="assets/player-hit.wav"></audio>
+    <audio class="player-hit" src="assets/player-hit.wav"></audio>
+    <audio class="player-hit" src="assets/player-hit.wav"></audio>
+
+    <script src="build/lib.js"></script>
+    <script src="build/ld32.js"></script>
   </body>
 </html>

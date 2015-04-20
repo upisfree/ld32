@@ -23,7 +23,8 @@ module.exports = (grunt) ->
       all:
         dest: 'build/lib.js'
         mainFiles:
-          'pixi.js': 'bin/pixi.dev.js'
+          'pixi.js': 'bin/pixi.js'
+          'matter-js': 'build/matter.min.js'
 
     uglify:
       src:
