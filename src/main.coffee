@@ -8,6 +8,8 @@ mx = 0
 my = 0
 
 LIFES = 500
+ZOMBIES = 0
+TIME = 0
 
 scene = PIXI.Sprite.fromImage 'assets/scene.png'
 scene.width = window.w
@@ -162,7 +164,7 @@ Engine = Matter.Engine.create document.body,
 setTimeout ->
   getById('start-screen').style.display = 'none'
   Matter.Engine.run Engine
-, 2500
+, 4000
 
 # camera
 setCamera = (p) ->
@@ -194,15 +196,7 @@ window.onmousemove = (e) ->
   my = e.y
 
 
-window.onkeydown = (e) -> # TODO: Mousetrap
-  #switch player.render.sprite.texture
-  #  when 'assets/player-1'
-  #    player.render.sprite.texture = 'assets/player-2'
-  #  when 'assets/player-2'
-  #    player.render.sprite.texture = 'assets/player-3'
-  #  when 'assets/player-3'
-  #    player.render.sprite.texture = 'assets/player-1'
-
+window.onkeydown = (e) ->
   switch e.keyCode
     when 87, 38 # up
       Matter.Body.applyForce player, { x: 0, y: 0 }, Matter.Vector.mult(vectorFromAngle(player.angle), 10)
@@ -220,26 +214,6 @@ for i in [0...5]
 
 #console.log Engine.render.context
 
-#restart = ->
-#  destroyAllNPC()#
-#
-#  LIFES = 500#
-#
-#  player.isStatic   = true
-#  player.position.x = window.w / 2
-#  player.position.y = window.h / 2 - 300
-#  
-#  setTimeout ->
-#    player.isStatic = false
-#  , 100
-#
-#  #player.position.x = 0 + window.w / 2
-#  #player.position.y = 0 + window.h / 2 - 300
-
-#  for i in [0...5]
-#    new NPC player.position.x + Math.randomInt(-window.w / 2, window.w / 2), player.position.y + Math.randomInt(-window.h / 2, window.h / 2)
-
-
 Matter.Events.on Engine, 'collisionActive', (e) ->
   for pair in e.pairs
     if (pair.bodyA.label.split(',')[2] is 'player' and pair.bodyB.label.split(',')[2] is 'npc') or
@@ -247,7 +221,7 @@ Matter.Events.on Engine, 'collisionActive', (e) ->
       if LIFES is -1
         getById('end-screen').style.display = 'block'
         getByTag('canvas')[0].className = 'blur'
-        #console.log getByTag('canvas')[0].addClass
+
         setTimeout ->
           location.reload()
         , 5000
@@ -339,12 +313,8 @@ updateMirco = ->
 
   console.log ac
 
-  if ac > 50 and ac < 300 and Math.random() < 0.25
-    if npcs.length is 0
-      alert 'А ТЫ ВЫЙГРАЛ НАЖМИ РАЗРЕШИТЬ'
-      location.reload()
-    else
-      npcs[Math.randomInt(0, npcs.length - 1)].destroy()
+  if ac > 50 and ac < 300 #and Math.random() < 0.5
+    npcs[Math.randomInt(0, npcs.length - 1)].destroy()
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
 navigator.getUserMedia

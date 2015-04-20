@@ -1,5 +1,5 @@
 (function() {
-  var Engine, LIFES, MIN_SAMPLES, NPC, analyser, audioContext, buf, buflen, color, destroyAllNPC, getByClass, getById, getByTag, getRandomColor, gotStream, i, mediaStreamSource, mx, my, npcs, player, rgbToHex, scene, setCamera, updateMirco, vectorFromAngle, _i;
+  var Engine, LIFES, MIN_SAMPLES, NPC, TIME, ZOMBIES, analyser, audioContext, buf, buflen, color, destroyAllNPC, getByClass, getById, getByTag, getRandomColor, gotStream, i, mediaStreamSource, mx, my, npcs, player, rgbToHex, scene, setCamera, updateMirco, vectorFromAngle, _i;
 
   Math.randomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -100,6 +100,10 @@
   my = 0;
 
   LIFES = 500;
+
+  ZOMBIES = 0;
+
+  TIME = 0;
 
   scene = PIXI.Sprite.fromImage('assets/scene.png');
 
@@ -259,7 +263,7 @@
   setTimeout(function() {
     getById('start-screen').style.display = 'none';
     return Matter.Engine.run(Engine);
-  }, 2500);
+  }, 4000);
 
   setCamera = function(p) {
     return Engine.render.context.offset = new PIXI.Point(p.x, p.y);
@@ -414,13 +418,8 @@
     analyser.getFloatTimeDomainData(buf);
     ac = autoCorrelate(buf, audioContext.sampleRate);
     console.log(ac);
-    if (ac > 50 && ac < 300 && Math.random() < 0.25) {
-      if (npcs.length === 0) {
-        alert('А ТЫ ВЫЙГРАЛ НАЖМИ РАЗРЕШИТЬ');
-        return location.reload();
-      } else {
-        return npcs[Math.randomInt(0, npcs.length - 1)].destroy();
-      }
+    if (ac > 50 && ac < 300) {
+      return npcs[Math.randomInt(0, npcs.length - 1)].destroy();
     }
   };
 
