@@ -1,4 +1,4 @@
-DEV = true
+DEV = false
 
 module.exports = (grunt) ->
   require('load-grunt-tasks')(grunt)
@@ -23,8 +23,8 @@ module.exports = (grunt) ->
       all:
         dest: 'build/lib.js'
         mainFiles:
-          'pixi.js': 'bin/pixi.js'
-          'matter-js': 'build/matter.min.js'
+          'matter-js': 'build/matter.js'
+          'pixi.js': 'bin/pixi.dev.js'
 
     uglify:
       src:

@@ -317,7 +317,7 @@ updateMirco = ->
   analyser.getFloatTimeDomainData buf
   ac = autoCorrelate buf, audioContext.sampleRate
 
-  console.log ac
+  #console.log ac
 
   if ac > 50 and ac < 300 #and Math.random() < 0.5
     npcs[npcs.length - 1].destroy()
